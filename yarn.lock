@@ -8465,6 +8465,7 @@ __metadata:
     react: 18.3.1
     react-native: 0.75.3
     react-native-dotenv: ^3.4.11
+    react-native-mmkv: ^3.2.0
     react-native-safe-area-context: ^5.0.0
     react-native-screens: ^4.3.0
     react-native-webview: ^13.13.1
@@ -8970,6 +8971,16 @@ __metadata:
   peerDependencies:
     "@babel/runtime": ^7.20.6
   checksum: 3ebac2c2ed79dd7e4920fd3fc2da9187413b7190231618e4858b46c47833677838b96d531afe7bd5c4b0a60454dba40cb8708722210df5d522e30aefbf41da05
+  languageName: node
+  linkType: hard
+
+"react-native-mmkv@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "react-native-mmkv@npm:3.2.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 766944a7cbf265e27b57576e51bff8604cd8f58c88eaec78bd93d4ce10ff9127d5f75f4c3bb03d6c7ce5dafa07c65e233d5363c0504db802cc88eaf1ccbffaa1
   languageName: node
   linkType: hard
 
