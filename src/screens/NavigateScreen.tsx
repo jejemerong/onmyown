@@ -22,8 +22,8 @@ function NavigateScreen() {
       <Pressable onPress={() => navigation.navigate('Test')}>
         <Text>Test</Text>
       </Pressable>
-      <Pressable onPress={() => navigation.navigate('StateTest')}>
-        <Text>상태관리 화면</Text>
+      <Pressable onPress={() => navigation.navigate('Profile')}>
+        <Text>Profile</Text>
       </Pressable>
       <Pressable onPress={() => navigation.navigate('Home')}>
         <Text>Home</Text>

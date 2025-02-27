@@ -1,9 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import HomeScreen from '../screens/HomeScreen'
-import LoginScreen from '../screens/LoginScreen'
-import StreakTrackerScreen from '../screens/StreakTrackerScreen'
 import { createStaticNavigation } from '@react-navigation/native'
-import TestScreen from '../screens/TestScreen'
+import {
+  HomeScreen,
+  LoginScreen,
+  StreakTrackerScreen,
+  ProfileScreen,
+  TestScreen,
+} from '../screens'
 import NavigateScreen from '../screens/NavigateScreen'
 
 const RootStack = createNativeStackNavigator({
@@ -13,6 +16,10 @@ const RootStack = createNativeStackNavigator({
   screens: {
     Navigate: {
       screen: NavigateScreen,
+      options: { headerShown: false },
+    },
+    Profile: {
+      screen: ProfileScreen,
       options: { headerShown: false },
     },
     Test: {
