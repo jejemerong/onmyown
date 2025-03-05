@@ -10,9 +10,6 @@ import {
 import NavigateScreen from '../screens/NavigateScreen'
 
 const RootStack = createNativeStackNavigator({
-  // TODO: login state 에 따라 분기 처리 가능한지
-  initialRouteName: 'Navigate',
-  // initialRouteName: 'Login',
   screens: {
     Navigate: {
       screen: NavigateScreen,
