@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { appleAuth } from '@invertase/react-native-apple-authentication'
 import CharacterImg from '../components/CharacterImg'
 import styled from 'styled-components'
+import { reduxStorage } from '../store/storage'
 
 const LoginScreen = () => {
   const navigation = useNavigation()
@@ -31,10 +32,25 @@ const LoginScreen = () => {
       appleAuthRequestResponse.email,
     ) // fullName: {"familyName": "오", "givenName": "모", "middleName": null, "namePrefix": null, "nameSuffix": null, "nickname": null}
 
+    const username =
+      appleAuthRequestResponse.fullName?.familyName +
+      appleAuthRequestResponse.fullName?.givenName
+    const email = appleAuthRequestResponse.email
+
     // use credentialState response to ensure the user is authenticated
     if (credentialState === appleAuth.State.AUTHORIZED) {
+      if (username) {
+        reduxStorage.setItem('isLoggedIn', true)
+        reduxStorage.setItem('username', username)
+        reduxStorage.setItem('appleId', username)
+        reduxStorage.setItem('emoji', '😈')
+        reduxStorage.setItem('streak', 0)
+      }
+      if (email) {
+        reduxStorage.setItem('email', email)
+      }
       // user is authenticated
-      navigation.navigate('Home')
+      navigation.navigate('Profile')
     }
   }
 
