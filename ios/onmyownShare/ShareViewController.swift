@@ -118,7 +118,7 @@ class ShareViewController: UIViewController {
     guard let mmkv = MMKV(mmapID: "onmyown") else {
                 return
             }
-    
+    mmkv.set("string", forKey: "selectedChallenge_type")
     mmkv.set(challenge, forKey: "selectedChallenge")
     print("Swift: string = \(mmkv.string(forKey: "selectedChallenge") ?? "")")
   }

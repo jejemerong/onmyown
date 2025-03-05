@@ -29,7 +29,6 @@ export const removeItem = async (key: string) => {
 export const getAppGroupDirectory = async () => {
   try {
     const path = await UserDefaultsModule.getAppGroupDirectory()
-    console.log('App Group Directory:', path)
     return path
   } catch (error) {
     console.error('Failed to get App Group directory:', error)

@@ -1,13 +1,64 @@
+import { Storage } from 'redux-persist'
 import { MMKV } from 'react-native-mmkv'
 import { getAppGroupDirectory } from '../../NativeModules/RCTUserDefaultsModule'
 
-// 사용 예시
-getAppGroupDirectory().then((path) => {
-  console.log('Storage Path:', path)
-})
+export async function initializeStorage() {
+  let storage = null
+  try {
+    const path = await getAppGroupDirectory()
+    if (path) {
+      storage = new MMKV({
+        id: 'onmyown',
+        path,
+      })
+    }
+  } catch (error) {
+    console.error('Failed to initialize MMKV:', error)
+  }
+  return storage
+}
 
-// TODO: path 변수로 수정, 각 디렉토리가 어떤 걸 의미하는지 변수로 치환할 수 있는지 테스트하기
-export const storage = new MMKV({
-  id: 'onmyown',
-  path: `/private/var/mobile/Containers/Shared/AppGroup/44FFCCC1-541E-4D7F-B40C-DA359C0A8C8F`,
-})
+export const reduxStorage: Storage = {
+  setItem: async (key, value) => {
+    const instance = await initializeStorage()
+    if (instance) {
+      // 데이터 타입 저장
+      const type = typeof value
+      instance.set(`${key}_type`, type)
+
+      // 실제 데이터 저장
+      if (type === 'string') {
+        instance.set(key, value)
+      } else if (type === 'number') {
+        instance.set(key, value)
+      } else if (type === 'boolean') {
+        instance.set(key, value)
+      }
+      return true
+    }
+    return false
+  },
+  getItem: async (key) => {
+    const instance = await initializeStorage()
+    if (instance) {
+      const type = instance.getString(`${key}_type`)
+      console.log('instance.getString', key, type)
+
+      if (type === 'string') {
+        return instance.getString(key)
+      } else if (type === 'number') {
+        return instance.getNumber(key)
+      } else if (type === 'boolean') {
+        return instance.getBoolean(key)
+      }
+    }
+    return null
+  },
+  removeItem: async (key) => {
+    const instance = await initializeStorage()
+    if (instance) {
+      instance.delete(key)
+      instance.delete(`${key}_type`)
+    }
+  },
+}
