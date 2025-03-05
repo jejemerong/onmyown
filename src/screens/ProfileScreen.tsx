@@ -7,62 +7,59 @@ import {
   Image,
   Linking,
 } from 'react-native'
-import { storage } from '../store/storage'
+import { reduxStorage } from '../store/storage'
 
 function ProfileScreen() {
   const theme = useColorScheme()
   const isDarkTheme = theme === 'dark'
 
-  // TODO: 전역 상태 관리, storage 에서 데이터 가져오기
+  const [userID, setUserID] = useState('')
   const [level, setLevel] = useState(1)
-  const [challenge, setChallenge] = useState('')
-  const storagedStreak =
-    storage.getNumber('streak') === undefined || null
-      ? 0
-      : storage.getNumber('streak')
-  console.log('streak: ', storagedStreak)
-  const [streak, setStreak] = useState(storagedStreak)
 
-  if (storage.getString('streak') === undefined) {
-    console.log('streak 없음')
-    storage.set('streak', 0)
-  }
-
-  storage.set('user.ID', 'JEJE')
-  const userID = storage.getString('user.ID')
-  console.log('userId: ', userID)
+  // TODO: useAppSelector 로 변경
+  const [streak, setStreak] = useState(0)
+  console.log('streak in ProfileScreen: ', streak)
 
   useEffect(() => {
     // 앱이 백그라운드일 때 딥링크로 열린 경우
-    Linking.getInitialURL().then((url) => {
-      console.log('백그라운드', storage.getAllKeys())
+    const getInitialURL = async () => {
+      const url = await Linking.getInitialURL() // 딥링크
+      // TODO: 백그라운드에서 url 없어진 케이스 핸들링
       if (url) {
-        const selectedChallenge = storage.getString('selectedChallenge')
+        const selectedChallenge = await reduxStorage.getItem(
+          'selectedChallenge',
+        )
         console.log('selectedChallenge: ', selectedChallenge)
+        let storedStreak = await reduxStorage.getItem('streak')
+        console.log('storedStreak타입 ', storedStreak, typeof storedStreak)
+        if (storedStreak === null) {
+          setStreak(0)
+        } else {
+          setStreak(storedStreak)
+        }
         if (selectedChallenge === '각자도생 스터디') {
-          storage.set('streak', storagedStreak + 1)
-          setStreak(streak + 1)
-        } // TODO: 챌린지 검증 함수 추가
+          console.log('여기 들어오나')
+          setStreak(storedStreak + 1)
+          console.log('newStreak 타입 ', typeof storedStreak)
+          await reduxStorage.setItem('streak', storedStreak + 1)
+        }
       }
-    })
-
-    // 앱이 포그라운드일 때 딥링크로 열린 경우
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      console.log('포그라운드')
-      const selectedChallenge = storage.getString('selectedChallenge')
-      console.log('selectedChallenge: ', selectedChallenge)
-      if (selectedChallenge === '각자도생 스터디') {
-        storage.set('streak', storagedStreak + 1)
-        setStreak(streak + 1)
-      } // TODO: 챌린지 검증 함수 추가
-    })
-
-    return () => {
-      subscription.remove()
     }
+    getInitialURL()
+
+    // TODO: 포그라운드 딥링크 실행 로직 추가하기
   }, [])
 
-  // number to emoji => 231 => 2️⃣3️⃣1️⃣
+  useEffect(() => {
+    const getStoredStreak = async () => {
+      const value = await reduxStorage.getItem('streak')
+      setStreak(Number(value) || 0)
+    }
+
+    getStoredStreak()
+  }, [])
+
+  // TODO: 함수 모듈화 number to emoji => 231 => 2️⃣3️⃣1️⃣
   const numberToEmoji = (number: number) => {
     let num = number.toString()
     let result = ''
@@ -79,7 +76,7 @@ function ProfileScreen() {
     {
       name: '각자도생 스터디',
       emoji: '📗',
-      streak: 1,
+      streak,
     },
     {
       name: '듀오링고',
@@ -92,6 +89,24 @@ function ProfileScreen() {
       streak: 3,
     },
   ]
+
+  // const challenges = {
+  //   '각자도생 스터디': {
+  //     name: '각자도생 스터디',
+  //     emoji: '📗',
+  //     streak: 1,
+  //   },
+  //   듀오링고: {
+  //     name: '듀오링고',
+  //     emoji: '🇩🇪',
+  //     streak: 525,
+  //   },
+  //   '짐박스 출석': {
+  //     name: '짐박스 출석',
+  //     emoji: '💪',
+  //     streak: 3,
+  //   },
+  // }
 
   return (
     <SafeAreaView
@@ -242,7 +257,7 @@ function ProfileScreen() {
                 {challenge.name}
               </Text>
               <Text style={{ fontSize: 17, fontWeight: 'bold' }}>
-                🔥 {streak}
+                🔥 {challenge.streak}
               </Text>
             </View>
           )
