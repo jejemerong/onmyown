@@ -11,7 +11,8 @@ prepare_react_native_project!
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
+  # use_frameworks! :linkage => linkage.to_sym
+  use_frameworks! :linkage => :dynamic
 end
 
 target 'onmyown' do
@@ -37,4 +38,8 @@ target 'onmyown' do
       # :ccache_enabled => true
     )
   end
+end
+
+target 'onmyownShare' do
+  pod 'MMKVAppExtension'
 end

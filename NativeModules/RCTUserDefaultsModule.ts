@@ -25,3 +25,12 @@ export const removeItem = async (key: string) => {
     throw new Error('Error removing item: ' + error.message)
   }
 }
+
+export const getAppGroupDirectory = async () => {
+  try {
+    const path = await UserDefaultsModule.getAppGroupDirectory()
+    return path
+  } catch (error) {
+    console.error('Failed to get App Group directory:', error)
+  }
+}
