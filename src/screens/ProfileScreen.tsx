@@ -7,57 +7,51 @@ import {
   Image,
   Linking,
 } from 'react-native'
-import { reduxStorage } from '../store/storage'
+import {
+  challengeSlice,
+  mmkvStorage,
+  useAppDispatch,
+  useAppSelector,
+} from '../store/storage'
 
 function ProfileScreen() {
   const theme = useColorScheme()
   const isDarkTheme = theme === 'dark'
 
-  const [userID, setUserID] = useState('')
+  const dispatch = useAppDispatch()
+
+  const username = useAppSelector((state) => state.root.user.name)
   const [level, setLevel] = useState(1)
 
-  // TODO: useAppSelector 로 변경
-  const [streak, setStreak] = useState(0)
-  console.log('streak in ProfileScreen: ', streak)
+  const streak = useAppSelector((state) => state.root.challenge.streak)
+  console.log('streak 11111111', streak)
 
   useEffect(() => {
     // 앱이 백그라운드일 때 딥링크로 열린 경우
     const getInitialURL = async () => {
-      const url = await Linking.getInitialURL() // 딥링크
+      let url = await Linking.getInitialURL() // 딥링크
+      const selectedChallenge = await mmkvStorage.getItem('selectedChallenge')
+      console.log('selectedChallenge: ', selectedChallenge)
       // TODO: 백그라운드에서 url 없어진 케이스 핸들링
       if (url) {
-        const selectedChallenge = await reduxStorage.getItem(
-          'selectedChallenge',
-        )
         console.log('selectedChallenge: ', selectedChallenge)
-        let storedStreak = await reduxStorage.getItem('streak')
-        console.log('storedStreak타입 ', storedStreak, typeof storedStreak)
-        if (storedStreak === null) {
-          setStreak(0)
-        } else {
-          setStreak(storedStreak)
-        }
+
         if (selectedChallenge === '각자도생 스터디') {
-          console.log('여기 들어오나')
-          setStreak(storedStreak + 1)
-          console.log('newStreak 타입 ', typeof storedStreak)
-          await reduxStorage.setItem('streak', storedStreak + 1)
+          console.log('streak 22222222', streak)
+          dispatch(
+            challengeSlice.actions.setChallenge({
+              challengeName: selectedChallenge,
+              streak: streak + 1,
+            }),
+          )
+          mmkvStorage.setItem('selectedChallenge', '')
         }
       }
     }
     getInitialURL()
 
     // TODO: 포그라운드 딥링크 실행 로직 추가하기
-  }, [])
-
-  useEffect(() => {
-    const getStoredStreak = async () => {
-      const value = await reduxStorage.getItem('streak')
-      setStreak(Number(value) || 0)
-    }
-
-    getStoredStreak()
-  }, [])
+  }, [streak])
 
   // TODO: 함수 모듈화 number to emoji => 231 => 2️⃣3️⃣1️⃣
   const numberToEmoji = (number: number) => {
@@ -193,7 +187,7 @@ function ProfileScreen() {
             color: 'black',
           }}
         >
-          {userID}
+          {username}
         </Text>
         <Text
           style={{
